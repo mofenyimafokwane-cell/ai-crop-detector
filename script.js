@@ -84,10 +84,46 @@ async function analyzeImage() {
         }
 
         const confidence = highest.probability * 100;
+        const status = highest.className.toLowerCase();
+
+        let message = "";
+        let background = "";
+        let textColor = "";
+
+        if (status.includes("healthy")) {
+            message = "Your crop appears healthy. Continue monitoring it regularly.";
+            background = "#d4edda";
+            textColor = "#155724";
+
+        } else if (status.includes("early")) {
+            message = "Early signs of stress detected. Inspect the affected leaves and monitor the crop closely.";
+            background = "#fff3cd";
+            textColor = "#856404";
+
+        } else if (status.includes("infected")) {
+            message = "Possible infection detected. Inspect affected plants and take appropriate crop-management action.";
+            background = "#f8d7da";
+            textColor = "#721c24";
+
+        } else {
+            message = "Continue monitoring the crop and inspect any unusual changes.";
+            background = "#e2e3e5";
+            textColor = "#383d41";
+        }
+
+        result.style.backgroundColor = background;
+        result.style.color = textColor;
+        result.style.padding = "20px";
+        result.style.borderRadius = "15px";
+        result.style.marginTop = "20px";
 
         result.innerHTML =
-            "🌱 Crop Status: " + highest.className +
-            "<br>Confidence: " + confidence.toFixed(1) + "%";
+            "<strong>🌱 Crop Status: " + highest.className + "</strong>" +
+            "<br><br>" +
+            "Confidence: " + confidence.toFixed(1) + "%" +
+            "<br><br>" +
+            "<strong>💡 Tip:</strong><br>" +
+            message;
 
     } catch (error) {
         console.error(error);
