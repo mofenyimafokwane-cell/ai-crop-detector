@@ -40,15 +40,46 @@ document.getElementById("imageUpload").addEventListener("change", function(event
 
     if (!file) return;
 
+    const result = document.getElementById("result");
     const image = document.getElementById("imagePreview");
 
     imageReady = false;
+
+    // Basic image-quality check
+    if (!file.type.startsWith("image/")) {
+        result.innerText = "Please choose a valid image.";
+        return;
+    }
+
+    if (file.size < 10000) {
+        result.innerText = "Image may be too small. Please choose a clearer photo.";
+        return;
+    }
+
+    if (file.size > 15000000) {
+        result.innerText = "Image is too large. Please choose a smaller photo.";
+        return;
+    }
+
     image.style.display = "block";
 
     image.onload = function() {
+
         imageReady = true;
-        document.getElementById("result").innerText =
+
+        if (image.naturalWidth < 200 || image.naturalHeight < 200) {
+            result.innerText =
+                "Image quality may be low. Try a clearer crop photo.";
+            return;
+        }
+
+        result.innerText =
             "Image ready! Tap Analyze Crop.";
+    };
+
+    image.onerror = function() {
+        result.innerText =
+            "Could not read this image. Please choose another photo.";
     };
 
     image.src = URL.createObjectURL(file);
@@ -69,6 +100,7 @@ async function analyzeImage() {
     }
 
     try {
+
         result.innerText = "Analysing crop image...";
 
         const image = document.getElementById("imagePreview");
@@ -84,31 +116,84 @@ async function analyzeImage() {
         }
 
         const confidence = highest.probability * 100;
+
         const status = highest.className.toLowerCase();
+
+        let healthy = 0;
+        let early = 0;
+        let infected = 0;
+
+        for (let i = 0; i < predictions.length; i++) {
+
+            const name = predictions[i].className.toLowerCase();
+            const percentage =
+                predictions[i].probability * 100;
+
+            if (name.includes("healthy")) {
+                healthy = percentage;
+            }
+
+            else if (name.includes("early")) {
+                early = percentage;
+            }
+
+            else if (name.includes("infected")) {
+                infected = percentage;
+            }
+        }
 
         let message = "";
         let background = "";
         let textColor = "";
 
         if (status.includes("healthy")) {
-            message = "Your crop appears healthy. Continue monitoring it regularly.";
+
+            message =
+                "Your crop appears healthy. Continue monitoring it regularly.";
+
             background = "#d4edda";
             textColor = "#155724";
 
-        } else if (status.includes("early")) {
-            message = "Early signs of stress detected. Inspect the affected leaves and monitor the crop closely.";
+        }
+
+        else if (status.includes("early")) {
+
+            message =
+                "Early signs of stress detected. Inspect the affected leaves and monitor the crop closely.";
+
             background = "#fff3cd";
             textColor = "#856404";
 
-        } else if (status.includes("infected")) {
-            message = "Possible infection detected. Inspect affected plants and take appropriate crop-management action.";
+        }
+
+        else if (status.includes("infected")) {
+
+            message =
+                "Possible infection detected. Inspect affected plants and take appropriate crop-management action.";
+
             background = "#f8d7da";
             textColor = "#721c24";
 
-        } else {
-            message = "Continue monitoring the crop and inspect any unusual changes.";
+        }
+
+        else {
+
+            message =
+                "Continue monitoring the crop and inspect any unusual changes.";
+
             background = "#e2e3e5";
             textColor = "#383d41";
+        }
+
+        let warning = "";
+
+        if (confidence < 60) {
+
+            warning =
+                "<br><br>⚠️ <strong>Low confidence:</strong> " +
+                "The AI is uncertain about this result. " +
+                "Try taking another clear photo in good lighting.";
+
         }
 
         result.style.backgroundColor = background;
@@ -118,16 +203,48 @@ async function analyzeImage() {
         result.style.marginTop = "20px";
 
         result.innerHTML =
-            "<strong>🌱 Crop Status: " + highest.className + "</strong>" +
-            "<br><br>" +
-            "Confidence: " + confidence.toFixed(1) + "%" +
-            "<br><br>" +
-            "<strong>💡 Tip:</strong><br>" +
-            message;
 
-    } catch (error) {
+            "<strong>🌱 Crop Status: " +
+            highest.className +
+            "</strong>" +
+
+            "<br><br>" +
+
+            "Confidence: " +
+            confidence.toFixed(1) +
+            "%" +
+
+            "<br><br>" +
+
+            "<strong>AI Confidence Breakdown:</strong>" +
+
+            "<br>🟢 Healthy: " +
+            healthy.toFixed(1) +
+            "%" +
+
+            "<br>🟡 Early Stage: " +
+            early.toFixed(1) +
+            "%" +
+
+            "<br>🔴 Infected: " +
+            infected.toFixed(1) +
+            "%" +
+
+            "<br><br>" +
+
+            "<strong>💡 Tip:</strong><br>" +
+            message +
+
+            warning;
+
+    }
+
+    catch (error) {
+
         console.error(error);
-        result.innerText = "Something went wrong analysing the image.";
+
+        result.innerText =
+            "Something went wrong analysing the image.";
     }
 }
 
