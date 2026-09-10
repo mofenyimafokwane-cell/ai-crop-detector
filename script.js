@@ -1,127 +1,98 @@
-// Teachable Machine model URL
 const MODEL_URL = "https://teachablemachine.withgoogle.com/models/qx6ir4Ivu/";
 
 let model = null;
 let imageReady = false;
 
-// Load the AI model
 async function loadModel() {
+    const result = document.getElementById("result");
 
-```
-try {
+    try {
+        result.innerText = "Starting AI...";
 
-    document.getElementById("result").innerText =
-        "Loading AI model...";
+        if (typeof tmImage === "undefined") {
+            result.innerText = "AI library did not load.";
+            return;
+        }
 
-    const modelURL = MODEL_URL + "model.json";
-    const metadataURL = MODEL_URL + "metadata.json";
+        result.innerText = "Loading AI model...";
 
-    model = await tmImage.load(modelURL, metadataURL);
+        const modelURL = MODEL_URL + "model.json";
+        const metadataURL = MODEL_URL + "metadata.json";
 
-    document.getElementById("result").innerText =
-        "AI ready! Choose a crop image.";
+        model = await Promise.race([
+            tmImage.load(modelURL, metadataURL),
+            new Promise((_, reject) =>
+                setTimeout(() => reject(new Error("Model timeout")), 15000)
+            )
+        ]);
 
-    console.log("Teachable Machine model loaded!");
+        result.innerText = "AI ready! Choose a crop image.";
 
-} catch (error) {
-
-    console.error("Model loading error:", error);
-
-    document.getElementById("result").innerText =
-        "Could not load the AI model.";
+    } catch (error) {
+        console.error(error);
+        result.innerText = "AI could not load. Please refresh.";
+    }
 }
-```
 
-}
-
-// Preview selected image
 document.getElementById("imageUpload").addEventListener("change", function(event) {
 
-```
-const file = event.target.files[0];
+    const file = event.target.files[0];
 
-if (!file) {
-    return;
-}
-
-const image = document.getElementById("imagePreview");
-
-imageReady = false;
-
-image.onload = function() {
-
-    imageReady = true;
-
-    document.getElementById("result").innerText =
-        "Image ready! Tap Analyze Crop.";
-};
-
-image.src = window.URL.createObjectURL(file);
-image.style.display = "block";
-
-console.log("Image uploaded!");
-```
-
-});
-
-// Analyze crop image
-async function analyzeImage() {
-
-```
-if (!model) {
-
-    document.getElementById("result").innerText =
-        "AI model is still loading. Please wait...";
-
-    return;
-}
-
-if (!imageReady) {
-
-    document.getElementById("result").innerText =
-        "Please choose an image first.";
-
-    return;
-}
-
-try {
-
-    document.getElementById("result").innerText =
-        "Analysing crop image...";
+    if (!file) return;
 
     const image = document.getElementById("imagePreview");
 
-    const predictions = await model.predict(image);
+    imageReady = false;
+    image.style.display = "block";
 
-    let highest = predictions[0];
+    image.onload = function() {
+        imageReady = true;
+        document.getElementById("result").innerText =
+            "Image ready! Tap Analyze Crop.";
+    };
 
-    for (let i = 1; i < predictions.length; i++) {
+    image.src = URL.createObjectURL(file);
+});
 
-        if (predictions[i].probability > highest.probability) {
-            highest = predictions[i];
-        }
+async function analyzeImage() {
+
+    const result = document.getElementById("result");
+
+    if (!model) {
+        result.innerText = "AI is still loading. Please wait.";
+        return;
     }
 
-    const confidence = highest.probability * 100;
+    if (!imageReady) {
+        result.innerText = "Please choose an image first.";
+        return;
+    }
 
-    document.getElementById("result").innerHTML =
-        "🌱 Crop Status: " + highest.className +
-        "<br>Confidence: " +
-        confidence.toFixed(1) + "%";
+    try {
+        result.innerText = "Analysing crop image...";
 
-    console.log("Prediction:", highest.className);
-    console.log("Confidence:", confidence);
+        const image = document.getElementById("imagePreview");
 
-} catch (error) {
+        const predictions = await model.predict(image);
 
-    console.error("Analysis error:", error);
+        let highest = predictions[0];
 
-    document.getElementById("result").innerText =
-        "Something went wrong while analysing the image.";
+        for (let i = 1; i < predictions.length; i++) {
+            if (predictions[i].probability > highest.probability) {
+                highest = predictions[i];
+            }
+        }
+
+        const confidence = highest.probability * 100;
+
+        result.innerHTML =
+            "🌱 Crop Status: " + highest.className +
+            "<br>Confidence: " + confidence.toFixed(1) + "%";
+
+    } catch (error) {
+        console.error(error);
+        result.innerText = "Something went wrong analysing the image.";
+    }
 }
-```
 
-}
-
-// Start the AI
 loadModel();
