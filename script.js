@@ -1,4 +1,3 @@
-
 ```javascript
 // Teachable Machine model URL
 const MODEL_URL = "https://teachablemachine.withgoogle.com/models/qx6ir4Ivu/";
@@ -10,13 +9,13 @@ let imageReady = false;
 // Load the AI model
 async function loadModel() {
 
-    const modelURL = MODEL_URL + "model.json";
-    const metadataURL = MODEL_URL + "metadata.json";
-
     try {
 
         document.getElementById("result").innerText =
             "Loading AI model...";
+
+        const modelURL = MODEL_URL + "model.json";
+        const metadataURL = MODEL_URL + "metadata.json";
 
         model = await tmImage.load(modelURL, metadataURL);
 
@@ -30,7 +29,7 @@ async function loadModel() {
         console.error("Model loading error:", error);
 
         document.getElementById("result").innerText =
-            "Could not load the AI model. Please refresh the page.";
+            "Could not load the AI model.";
     }
 }
 
@@ -82,12 +81,12 @@ async function analyzeImage() {
         return;
     }
 
-    const image = document.getElementById("imagePreview");
-
     try {
 
         document.getElementById("result").innerText =
             "Analysing crop image...";
+
+        const image = document.getElementById("imagePreview");
 
         const predictions = await model.predict(image);
 
