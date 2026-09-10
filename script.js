@@ -143,12 +143,17 @@ async function analyzeImage() {
         let message = "";
         let background = "";
         let textColor = "";
+        let explanation = "";
 
         if (status.includes("healthy")) {
 
             message =
                 "Healthy spinach: Keep monitoring the leaves regularly, " +
                 "maintain suitable growing conditions, and watch for unusual changes.";
+
+            explanation =
+                "The AI classified this image as Healthy because the Healthy " +
+                "category received the highest confidence score.";
 
             background = "#d4edda";
             textColor = "#155724";
@@ -162,6 +167,12 @@ async function analyzeImage() {
                 "check the growing conditions, and monitor the plant frequently " +
                 "for changes.";
 
+            explanation =
+                "The AI classified this image as Early Stage because the Early " +
+                "Stage category received the highest confidence score. " +
+                "This means the AI detected patterns that were more similar " +
+                "to its Early Stage training examples.";
+
             background = "#fff3cd";
             textColor = "#856404";
 
@@ -174,6 +185,12 @@ async function analyzeImage() {
                 "separate clearly affected plants where practical, and seek " +
                 "appropriate crop-management advice.";
 
+            explanation =
+                "The AI classified this image as Infected because the Infected " +
+                "category received the highest confidence score. " +
+                "The result should still be treated as an AI prediction, " +
+                "not a laboratory diagnosis.";
+
             background = "#f8d7da";
             textColor = "#721c24";
 
@@ -183,6 +200,10 @@ async function analyzeImage() {
 
             message =
                 "Continue monitoring the spinach and inspect any unusual changes.";
+
+            explanation =
+                "The AI selected the category with the highest confidence " +
+                "among the available classes.";
 
             background = "#e2e3e5";
             textColor = "#383d41";
@@ -257,7 +278,18 @@ async function analyzeImage() {
             "<strong>💡 Crop-Specific Tip:</strong><br>" +
             message +
 
-            warning;
+            "<br><br>" +
+
+            "<strong>🧠 Why did the AI choose this?</strong><br>" +
+            explanation +
+
+            warning +
+
+            "<br><br>" +
+
+            "<button onclick='scanAnother()'>" +
+            "🔄 Scan Another" +
+            "</button>";
 
         displayHistory();
 
@@ -270,6 +302,34 @@ async function analyzeImage() {
         result.innerText =
             "Something went wrong analysing the image.";
     }
+}
+
+// Upgrade 6: Scan Another
+function scanAnother() {
+
+    const upload = document.getElementById("imageUpload");
+    const image = document.getElementById("imagePreview");
+    const result = document.getElementById("result");
+
+    upload.value = "";
+
+    image.src = "";
+    image.style.display = "none";
+
+    imageReady = false;
+
+    result.style.backgroundColor = "";
+    result.style.color = "";
+    result.style.padding = "";
+    result.style.borderRadius = "";
+
+    result.innerText =
+        "AI ready! Choose another crop image.";
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
 }
 
 // Create Scan History section
