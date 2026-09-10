@@ -1,5 +1,7 @@
+
+```javascript
 // Teachable Machine model URL
-const MODEL_URL = "https://teachablemachine.withgoogle.com/models/x3L-4To3E/";
+const MODEL_URL = "https://teachablemachine.withgoogle.com/models/qx6ir4Ivu/";
 
 let model = null;
 let imageReady = false;
@@ -120,3 +122,4 @@ async function analyzeImage() {
 
 // Start the AI
 loadModel();
+```
