@@ -45,7 +45,6 @@ document.getElementById("imageUpload").addEventListener("change", function(event
 
     imageReady = false;
 
-    // Basic image-quality check
     if (!file.type.startsWith("image/")) {
         result.innerText = "Please choose a valid image.";
         return;
@@ -65,13 +64,14 @@ document.getElementById("imageUpload").addEventListener("change", function(event
 
     image.onload = function() {
 
-        imageReady = true;
-
         if (image.naturalWidth < 200 || image.naturalHeight < 200) {
+            imageReady = false;
             result.innerText =
                 "Image quality may be low. Try a clearer crop photo.";
             return;
         }
+
+        imageReady = true;
 
         result.innerText =
             "Image ready! Tap Analyze Crop.";
@@ -116,7 +116,6 @@ async function analyzeImage() {
         }
 
         const confidence = highest.probability * 100;
-
         const status = highest.className.toLowerCase();
 
         let healthy = 0;
@@ -126,8 +125,7 @@ async function analyzeImage() {
         for (let i = 0; i < predictions.length; i++) {
 
             const name = predictions[i].className.toLowerCase();
-            const percentage =
-                predictions[i].probability * 100;
+            const percentage = predictions[i].probability * 100;
 
             if (name.includes("healthy")) {
                 healthy = percentage;
@@ -193,8 +191,27 @@ async function analyzeImage() {
                 "<br><br>⚠️ <strong>Low confidence:</strong> " +
                 "The AI is uncertain about this result. " +
                 "Try taking another clear photo in good lighting.";
-
         }
+
+        // Save scan to history
+        const scan = {
+            status: highest.className,
+            confidence: confidence.toFixed(1),
+            healthy: healthy.toFixed(1),
+            early: early.toFixed(1),
+            infected: infected.toFixed(1),
+            date: new Date().toLocaleString()
+        };
+
+        let history = JSON.parse(localStorage.getItem("scanHistory")) || [];
+
+        history.unshift(scan);
+
+        if (history.length > 10) {
+            history = history.slice(0, 10);
+        }
+
+        localStorage.setItem("scanHistory", JSON.stringify(history));
 
         result.style.backgroundColor = background;
         result.style.color = textColor;
@@ -237,6 +254,8 @@ async function analyzeImage() {
 
             warning;
 
+        displayHistory();
+
     }
 
     catch (error) {
@@ -248,4 +267,93 @@ async function analyzeImage() {
     }
 }
 
+// Create Scan History section
+function displayHistory() {
+
+    let history = JSON.parse(localStorage.getItem("scanHistory")) || [];
+
+    let historyBox = document.getElementById("history");
+
+    if (!historyBox) {
+
+        historyBox = document.createElement("div");
+
+        historyBox.id = "history";
+
+        historyBox.style.marginTop = "30px";
+        historyBox.style.padding = "20px";
+        historyBox.style.backgroundColor = "#ffffff";
+        historyBox.style.borderRadius = "15px";
+
+        document.body.appendChild(historyBox);
+    }
+
+    if (history.length === 0) {
+
+        historyBox.innerHTML =
+            "<h2>📋 Scan History</h2>" +
+            "<p>No scans yet.</p>";
+
+        return;
+    }
+
+    let html =
+        "<h2>📋 Scan History</h2>";
+
+    for (let i = 0; i < history.length; i++) {
+
+        html +=
+
+            "<div style='padding:15px; margin:10px 0; background:#f2f8f2; border-radius:10px;'>" +
+
+            "<strong>🌱 " +
+            history[i].status +
+            "</strong>" +
+
+            "<br>" +
+
+            "Confidence: " +
+            history[i].confidence +
+            "%" +
+
+            "<br>" +
+
+            "🟢 Healthy: " +
+            history[i].healthy +
+            "% | " +
+
+            "🟡 Early: " +
+            history[i].early +
+            "% | " +
+
+            "🔴 Infected: " +
+            history[i].infected +
+            "%" +
+
+            "<br>" +
+
+            "<small>🕒 " +
+            history[i].date +
+            "</small>" +
+
+            "</div>";
+    }
+
+    html +=
+        "<button onclick='clearHistory()'>" +
+        "Clear Scan History" +
+        "</button>";
+
+    historyBox.innerHTML = html;
+}
+
+// Clear scan history
+function clearHistory() {
+
+    localStorage.removeItem("scanHistory");
+
+    displayHistory();
+}
+
 loadModel();
+displayHistory();
