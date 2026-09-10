@@ -1,67 +1,89 @@
-// Teachable Machine model URL
-const MODEL_URL = "https://teachablemachine.withgoogle.com/models/x3L-4To3E/";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-let model = null;
-let imageReady = false;
+    <title>AI Crop Detector</title>
 
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest"></script>
 
-// Load the AI model
-async function loadModel() {
-    const modelURL = MODEL_URL + "model.json";
-    const metadataURL = MODEL_URL + "metadata.json";
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background: #f2f8f2;
+            padding: 30px;
+        }
 
-    try {
-        document.getElementById("result").innerText =
-            "Loading AI model...";
+        h1 {
+            color: #2e7d32;
+        }
 
-        model = await tmImage.load(modelURL, metadataURL);
+        button {
+            padding: 12px 20px;
+            margin: 10px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            background: #2e7d32;
+            color: white;
+        }
 
-        document.getElementById("result").innerText =
-            "AI ready! Choose a crop image.";
+        #imagePreview {
+            max-width: 300px;
+            max-height: 300px;
+            margin: 20px;
+            border-radius: 15px;
+        }
 
-        console.log("Teachable Machine model loaded!");
+        #result {
+            margin-top: 20px;
+            font-size: 20px;
+            font-weight: bold;
+        }
 
-    } catch (error) {
-        console.error("Model loading error:", error);
+        #imageUpload {
+            color: white;
+            background-color: #2e7d32;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
 
-        document.getElementById("result").innerText =
-            "Could not load the AI model. Please refresh the page.";
-    }
-}
+        #imageUpload::file-selector-button {
+            background-color: #2e7d32;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+    </style>
+</head>
 
+<body>
 
-// Preview selected image
-document.getElementById("imageUpload").addEventListener("change", function(event) {
+    <h1>🌱 AI Crop Detector</h1>
 
-    const file = event.target.files[0];
+    <p>Upload a crop image to check its health.</p>
 
-    if (!file) {
-        return;
-    }
+    <input type="file" id="imageUpload" accept="image/*">
 
-    const image = document.getElementById("imagePreview");
+    <br>
 
-    imageReady = false;
+    <img id="imagePreview" style="display:none;">
 
-    image.onload = function() {
-        imageReady = true;
+    <br>
 
-        document.getElementById("result").innerText =
-            "Image ready! Tap Analyze Crop.";
-    };
+    <button onclick="analyzeImage()">Analyze Crop</button>
 
-    image.src = window.URL.createObjectURL(file);
-    image.style.display = "block";
+    <div id="result">Loading AI model...</div>
 
-    console.log("Image uploaded!");
-});
+    <script src="script.js"></script>
 
-
-// Analyze crop image
-async function analyzeImage() {
-
-    if (!model) {
-        document.getElementById("result").innerText =
-            "AI model is still loading. Please wait...";
-        return;
-    }
+</body>
+</html>
