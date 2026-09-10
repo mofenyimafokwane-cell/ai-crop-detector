@@ -147,7 +147,8 @@ async function analyzeImage() {
         if (status.includes("healthy")) {
 
             message =
-                "Your crop appears healthy. Continue monitoring it regularly.";
+                "Healthy spinach: Keep monitoring the leaves regularly, " +
+                "maintain suitable growing conditions, and watch for unusual changes.";
 
             background = "#d4edda";
             textColor = "#155724";
@@ -157,7 +158,9 @@ async function analyzeImage() {
         else if (status.includes("early")) {
 
             message =
-                "Early signs of stress detected. Inspect the affected leaves and monitor the crop closely.";
+                "Early-stage spinach: Inspect the affected leaves closely, " +
+                "check the growing conditions, and monitor the plant frequently " +
+                "for changes.";
 
             background = "#fff3cd";
             textColor = "#856404";
@@ -167,7 +170,9 @@ async function analyzeImage() {
         else if (status.includes("infected")) {
 
             message =
-                "Possible infection detected. Inspect affected plants and take appropriate crop-management action.";
+                "Possible spinach infection: Inspect affected plants carefully, " +
+                "separate clearly affected plants where practical, and seek " +
+                "appropriate crop-management advice.";
 
             background = "#f8d7da";
             textColor = "#721c24";
@@ -177,7 +182,7 @@ async function analyzeImage() {
         else {
 
             message =
-                "Continue monitoring the crop and inspect any unusual changes.";
+                "Continue monitoring the spinach and inspect any unusual changes.";
 
             background = "#e2e3e5";
             textColor = "#383d41";
@@ -249,7 +254,7 @@ async function analyzeImage() {
 
             "<br><br>" +
 
-            "<strong>💡 Tip:</strong><br>" +
+            "<strong>💡 Crop-Specific Tip:</strong><br>" +
             message +
 
             warning;
