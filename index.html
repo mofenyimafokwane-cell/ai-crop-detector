@@ -1,94 +1,95 @@
-```
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>AI Crop Detector</title>
+```
+<title>AI Crop Detector</title>
 
-    <!-- TensorFlow.js -->
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
 
-    <!-- Teachable Machine Image Library -->
-    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        background: #f2f8f2;
+        padding: 30px;
+    }
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            background: #f2f8f2;
-            padding: 30px;
-        }
+    h1 {
+        color: #2e7d32;
+    }
 
-        h1 {
-            color: #2e7d32;
-        }
+    button {
+        padding: 12px 20px;
+        margin: 10px;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        font-size: 16px;
+        background: #2e7d32;
+        color: white;
+    }
 
-        button {
-            padding: 12px 20px;
-            margin: 10px;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 16px;
-            background: #2e7d32;
-            color: white;
-        }
+    #imagePreview {
+        max-width: 300px;
+        max-height: 300px;
+        margin: 20px;
+        border-radius: 15px;
+    }
 
-        #imagePreview {
-            max-width: 300px;
-            max-height: 300px;
-            margin: 20px;
-            border-radius: 15px;
-        }
+    #result {
+        margin-top: 20px;
+        font-size: 20px;
+        font-weight: bold;
+    }
 
-        #result {
-            margin-top: 20px;
-            font-size: 20px;
-            font-weight: bold;
-        }
+    #imageUpload {
+        color: white;
+        background-color: #2e7d32;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+    }
 
-        #imageUpload {
-            color: white;
-            background-color: #2e7d32;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-        }
+    #imageUpload::file-selector-button {
+        background-color: #2e7d32;
+        color: white;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+    }
+</style>
+```
 
-        #imageUpload::file-selector-button {
-            background-color: #2e7d32;
-            color: white;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-        }
-    </style>
 </head>
 
 <body>
 
-    <h1>🌱 AI Crop Detector</h1>
+```
+<h1>🌱 AI Crop Detector</h1>
 
-    <p>Upload a crop image to check its health.</p>
+<p>Upload a crop image to check its health.</p>
 
-    <input type="file" id="imageUpload" accept="image/*">
+<input type="file" id="imageUpload" accept="image/*">
 
-    <br>
+<br>
 
-    <img id="imagePreview" style="display:none;">
+<img id="imagePreview" style="display:none;">
 
-    <br>
+<br>
 
-    <button onclick="analyzeImage()">Analyze Crop</button>
+<button onclick="analyzeImage()">Analyze Crop</button>
 
-    <div id="result">Loading AI model...</div>
+<div id="result">Loading AI model...</div>
 
-    <script src="script.js"></script>
+<script src="script.js"></script>
+```
 
 </body>
 </html>
-```
